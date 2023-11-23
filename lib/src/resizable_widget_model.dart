@@ -22,9 +22,10 @@ class ResizableWidgetModel {
     final size = originalChildren.length;
     final originalPercentages =
         _info.percentages ?? List.filled(size, 1 / size);
+
     for (var i = 0; i < size - 1; i++) {
       children.add(ResizableWidgetChildData(
-          originalChildren[i], originalPercentages[i]));
+          originalChildren[i], originalPercentages[i], _info.minSizes?[i]));
       children.add(ResizableWidgetChildData(
           separatorFactory.call(SeparatorArgsBasicInfo(
             2 * i + 1,
@@ -33,10 +34,11 @@ class ResizableWidgetModel {
             _info.separatorSize,
             _info.separatorColor,
           )),
-          null));
+          null,
+          0));
     }
-    children.add(ResizableWidgetChildData(
-        originalChildren[size - 1], originalPercentages[size - 1]));
+    children.add(ResizableWidgetChildData(originalChildren[size - 1],
+        originalPercentages[size - 1], _info.minSizes?[size - 1]));
   }
 
   void setSizeIfNeeded(BoxConstraints constraints) {
@@ -63,9 +65,46 @@ class ResizableWidgetModel {
   }
 
   void resize(int separatorIndex, Offset offset) {
+    //取到左右两边的widget的size
     final leftSize = _resizeImpl(separatorIndex - 1, offset);
     final rightSize = _resizeImpl(separatorIndex + 1, offset * (-1));
 
+    if (_info.minSizes != null && _info.minSizes!.isNotEmpty) {
+      final leftMinSize = children[separatorIndex - 1].minSize!;
+      final rightMinSize = children[separatorIndex + 1].minSize!;
+
+      if (leftSize < leftMinSize) {
+        final offsetScala = (leftMinSize - leftSize) / 2;
+        _resizeImpl(
+            separatorIndex - 1,
+            _info.isHorizontalSeparator
+                ? Offset(0, offsetScala)
+                : Offset(offsetScala, 0));
+
+        _resizeImpl(
+            separatorIndex + 1,
+            _info.isHorizontalSeparator
+                ? Offset(0, offsetScala * (-1))
+                : Offset(offsetScala * (-1), 0));
+      }
+
+      if (rightSize < rightMinSize) {
+        final offsetScala = (rightMinSize - rightSize) / 2;
+        _resizeImpl(
+            separatorIndex - 1,
+            _info.isHorizontalSeparator
+                ? Offset(0, offsetScala * (-1))
+                : Offset(offsetScala * (-1), 0));
+
+        _resizeImpl(
+            separatorIndex + 1,
+            _info.isHorizontalSeparator
+                ? Offset(0, offsetScala)
+                : Offset(offsetScala, 0));
+      }
+    }
+
+    //如果左右两边的widget的size小于0，就把左右两边的widget的size都加上这个负数
     if (leftSize < 0) {
       _resizeImpl(
           separatorIndex - 1,
@@ -142,6 +181,7 @@ class ResizableWidgetModel {
         size + (_info.isHorizontalSeparator ? offset.dy : offset.dx);
     children[widgetIndex].percentage =
         children[widgetIndex].size! / maxSizeWithoutSeparators!;
+
     return children[widgetIndex].size!;
   }
 

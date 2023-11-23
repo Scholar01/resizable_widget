@@ -39,6 +39,7 @@ class MyPage extends StatelessWidget {
             isHorizontalSeparator: true,
             separatorColor: Colors.blue,
             separatorSize: 10,
+            minSizes: [100, 200, 300],
             children: [
               Container(color: Colors.greenAccent),
               ResizableWidget(
@@ -48,18 +49,20 @@ class MyPage extends StatelessWidget {
                   Container(color: Colors.redAccent),
                 ],
                 percentages: const [0.2, 0.5, 0.3],
+                minSizes: [100, 200, 300],
               ),
               Container(color: Colors.redAccent),
             ],
           ),
           Container(color: Colors.redAccent),
         ],
+        minSizes: const [100, 200, 300],
       ),
     );
   }
 
   void _printResizeInfo(List<WidgetSizeInfo> dataList) {
     // ignore: avoid_print
-    print(dataList.map((x) => '(${x.size}, ${x.percentage}%)').join(", "));
+    // print(dataList.map((x) => '(${x.size}, ${x.percentage}%)').join(", "));
   }
 }

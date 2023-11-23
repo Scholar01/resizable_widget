@@ -4,6 +4,7 @@ import 'resizable_widget.dart';
 class ResizableWidgetArgsInfo {
   final List<Widget> children;
   final List<double>? percentages;
+  final List<double>? minSizes;
   final bool isHorizontalSeparator;
   final bool isDisabledSmartHide;
   final double separatorSize;
@@ -20,5 +21,6 @@ class ResizableWidgetArgsInfo {
         isDisabledSmartHide = widget.isDisabledSmartHide,
         separatorSize = widget.separatorSize,
         separatorColor = widget.separatorColor,
-        onResized = widget.onResized;
+        onResized = widget.onResized,
+        minSizes = widget.minSizes;
 }

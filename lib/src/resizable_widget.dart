@@ -23,6 +23,9 @@ class ResizableWidget extends StatefulWidget {
   /// If this value is [null], [children] will be split into the same size.
   final List<double>? percentages;
 
+  /// Sets the minimum size of [children].
+  final List<double>? minSizes;
+
   /// When set to true, creates horizontal separators.
   @Deprecated('Use [isHorizontalSeparator] instead')
   final bool isColumnChildren;
@@ -54,12 +57,13 @@ class ResizableWidget extends StatefulWidget {
     required this.children,
     this.percentages,
     @Deprecated('Use [isHorizontalSeparator] instead')
-        this.isColumnChildren = false,
+    this.isColumnChildren = false,
     this.isHorizontalSeparator = false,
     this.isDisabledSmartHide = false,
     this.separatorSize = 4,
     this.separatorColor = Colors.white12,
     this.onResized,
+    this.minSizes,
   }) : super(key: key) {
     assert(children.isNotEmpty);
     assert(percentages == null || percentages!.length == children.length);
@@ -102,10 +106,10 @@ class _ResizableWidgetState extends State<ResizableWidget> {
       return child.widget;
     }
 
-    return SizedBox(
-      width: _info.isHorizontalSeparator ? double.infinity : child.size,
-      height: _info.isHorizontalSeparator ? child.size : double.infinity,
-      child: child.widget,
-    );
+    return Container(
+        width: _info.isHorizontalSeparator ? double.infinity : child.size,
+        height: _info.isHorizontalSeparator ? child.size : double.infinity,
+        child: child.widget,
+        constraints: BoxConstraints());
   }
 }
